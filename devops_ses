@@ -1,0 +1,268 @@
+ra_user
+R@u53R
+
+U53r_R@
+
+check space on all the servers .
+IP	User	Password
+172.25.2.175	agilis	D3v3lopm3nt175  
+172.25.2.92	agilis	D3v3lopm3nt92  [not required]
+172.25.2.94	agilis	D3v3lopm3nt94
+172.25.2.96	agilis	D3v3lopm3nt96
+172.25.2.97	agilis	D3v3lopm3nt97
+172.25.2.97	agilis1	D3v3lopm3nt197
+172.25.2.93	oracle	D@t@b@5e93 --39es@b@t@d
+172.25.2.95	oracle	D@t@b@5e95 -- 59e5@b@t@D
+172.25.2.98	oracle	D@t@b@5e98
+
+http://172.25.2.97:8080/RACS/SiteminderSimulator.jsp
+
+
+-----------------db
+
+--username/password
+mpe_schema1
+event_schema1
+fms_schema1
+dwh_schema1
+adt_schema1
+sac_schema1
+art_schema
+rvm_schema1
+l2_schema1
+
+
+--connection string.
+
+slt_dwh_uat
+     
+slt_mpe_uat 
+   
+slt_evt_uat 
+   
+slt_fms_uat 
+    
+slt_dts_uat 
+  
+slt_adt_uat 
+    
+slt_rvm_uat
+    
+
+------------------------------------
+
+ nohup ./447_Recon.sh 30/Jun/2016 04:00:08 98659 352346 &
+
+-------------memory stats--------------
+sar -s
+
+-----------tablespace-------------
+
+SELECT T.tablespace_name AS "Table Space Name", 
+   TS."total_size_b"/1048576 AS "Total Size MB",
+   NVL(FS."free_size_b"/1048576, 0) AS "Free Size MB",
+   NVL(Round( 100 * US."used_size_b" / TS."total_size_b", 2 ), 0) AS "Used Percentage",
+   T.extent_management AS "Extent Management",
+   T.allocation_type AS "Allocation Type"
+FROM dba_tablespaces T,
+   (SELECT tablespace_name, 
+      Round(Sum(Bytes), 0) AS "total_size_b" 
+    FROM dba_data_files
+    GROUP BY tablespace_name) TS,
+   (SELECT tablespace_name, 
+      Round(Sum(Bytes), 0) AS "free_size_b"
+    FROM dba_free_space
+    GROUP BY tablespace_name) FS,
+   (SELECT tablespace_name, 
+      Round(Sum(Bytes), 0) AS "used_size_b"
+    FROM dba_segments
+    GROUP BY tablespace_name) US
+WHERE T.tablespace_name = TS.tablespace_name 
+AND T.tablespace_name = FS.tablespace_name (+) 
+AND T.tablespace_name = US.tablespace_name (+)
+ORDER BY T.tablespace_name;
+
+
+
+
+
+
+Alter tablespace BRT_ST_INDEX  add datafile '/ora/db005/data006/BRT1DS1/INDEX/BRT1DS1_BRT_ST_INDEX_17.dbf' size 10G autoextend on;
+
+
+
+select file_name,bytes/(1024*1024*1024),maxbytes/(1024*1024*1024),user_bytes/(1024*1024*1024) from dba_data_files where tablespace_name='L2_DATA_042016';
+
+
+
+----------mountpoints-----------
+
+df -h
+
+-----------------Chain Status---------------
+
+amon|wc -l 
+
+[ on .96 and .94 ]
+
+-------------------------Mediation Error---------------------
+ cd MPE/log/
+
+grep -n E00 mpe.log | grep -v uniq | grep -v CDR |grep -v TTF | grep -v 1000 | grep -v "ORA-01400"
+
+svcmgr  E000    profifp11 did not respond 3 times 
+
+.96  password agilis@123
+
+
+-------------------------L2 and MPE collector Status------------
+login .93
+username: oracle
+password: D@t@b@5e93
+
+run the below script:
+
+ ./slt_mon11.sh (lag date should not be more than sysdate -2/24 --*VU* SHOULD BE OF SYSDATE -1
+
+
+select file_name, bytes, maxbytes, tablespace_name, autoextensible from dba_data_files where tablespace_name = 'SAC_DATA';
+
+--tablespace for current month/date check for each data file.
+
+
+--------------------------ISAM Files Check (.dat & .idx)-------------------
+-- oss feeds not received 
+cd /home/agilis/MPE/data/out/read  
+ls -lrth 
+2 files for 94 and 6 files for .96 ---if files are less check at .175  cd /data/in/SLT/OSS/PROFILE
+
+
+
+---------------check rejection-----------------
+$AGILIS_HOME/bak/bms_switch/ze
+cat both files and monitor for rejection
+
+______________________________________________________RADIUS_____________
+
+cd /home/agilis/MPE/bak/radius/usage
+ls -lrth|tail
+cd  /data/in/SLT/SWT/RADIUS
+ls -lrth|tail
+check for any gz file and remove it if present (stop start mediation)
+
+************************************************************
+
+I have added a check for utilities in the below monitoring as highlighted. Please use this format from now onwards.
+
+Command is: ps –ef | grep APP on .94 server. It will show all utility APPs running.
+
+
+ ps -ef|grep CheckSeq
+ ps -ef|grep FileGap 
+ps -ef|grep CheckDupFile
+
+
+**************************************
+
+
+R1--inserted
+R58-extra record inserted 
+-----------------------------Delayed Summary Status--------------------------- DWHL1
+
+ on 172.25.2.93 DB server
+
+select decode(ds_number, 3, 'SWCDR', 4, 'MDCDR', 14, 'RTRCDR',5,'INUCDR')"STREAM",
+                dc_process_dt"DELAYED SUMM DATE"
+                from delayed_summ_cc_log
+                where ds_number in (3, 4, 14,5)
+                and table_id = 1;
+ 
+------------------------------Delayed Collection Status-------------------------
+
+alter session set nls_date_format='dd-mm-yy hh24:mi:ss';
+
+ select decode(ds_number, 3, 'SWCDR', 4, 'MDCDR', 14, 'RTRCDR',5,'INUCDR')"STREAM",
+         dc_last_rec_ins_dt"DELAYED COLL DATE"
+          from delayed_cc_log
+         where ds_number in (3, 4, 14,5);
+
+-------------------------Reconciliation Status – Profile-------------
+
+check in excel sheet provided
+
+
+------------------------reconcillation------------------
+rvm_schema1
+hostname: same
+
+select trunc(rec_recon_dt), count(*)
+  from rc_recon_log_hist
+ where rec_analysis_success = 1
+   and trunc(rec_recon_dt) >= trunc(sysdate - 5)
+ group by trunc(rec_recon_dt)
+ order by trunc(rec_recon_dt);
+
+--------------------------
+for ravemind alerts: login to RVM and run below query.
+
+select * from alerts order by al_last_fire_dt desc;
+
+select ct_case_alerts.ca_number, alerts.al_number, alerts.al_last_fire_dt,ds_number
+  from alerts
+ inner join ct_case_alerts on ct_case_alerts.al_number = alerts.al_number
+where alerts.al_last_fire_dt >= (sysdate-1/24) order by alerts.al_last_fire_dt desc;
+
+for netmind/workflow error:
+
+login to FMS schema:
+select ct_case_alerts.ca_number, alerts.al_number, alerts.al_last_fire_dt,ds_number
+  from alerts
+ inner join ct_case_alerts on ct_case_alerts.al_number = alerts.al_number
+where alerts.al_last_fire_dt >= (sysdate-1/24) order by alerts.al_last_fire_dt desc;
+
+-----------------------
+Hide these from A2 sheet
+
+34 :: KU
+38 :: VG
+     :: KY
+
+__________
+
+
+Steps for execute reconcilation:
+
+login to :
+http://172.25.2.97:8080/RACS/Dashboard.action
+
+super/super123
+
+1. open for view report
+2. calculate the time to be execute the recon according to below query:
+
+login to l1_ADT_93 schema
+
+execute the below script on the basis of report source condition :
+
+eg: select max(dump_dt) from source_name where (sorce_condition); ---then execute the recon on the basis of output date.
+
+
+
+
+
+
+awk -F'|' '{print NF}' FPD-85821_RTFAREQDATA_20190415_012717_MPEPROD8.dat
+
+
+select segment_name, sum(bytes)/1024/1024/1024 "Size in GB" from user_segments where segment_name in 
+(select TABLE_NAME from USER_TABLES where TABLE_NAME like '%012014') group by segment_name order by 2 desc;
+
+select segment_name, sum(bytes)/1024/1024/1024 "Size in GB" from user_segments where segment_name in 
+(select INDEX_NAME from USER_INDEXES where INDEX_NAME like '%012014%') group by segment_name order by 2 desc;
+
+select TABLE_NAME from dba_tables where TABLESPACE_NAME like 'L2_DATA_%' or TABLESPACE_NAME is null and OWNER = 'L2_SCHEMA1';
+
+select segment_name, sum(bytes)/1024/1024 "Size in MB" from dba_segments where segment_name in 
+(select TABLE_NAME from DBA_TABLES where TABLESPACE_NAME = 'RCN_DATA') group by segment_name order by 2 desc;
+
+select * from RP_ALERT_WLS;
